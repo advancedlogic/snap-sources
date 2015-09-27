@@ -41,6 +41,22 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <configuration>
+                    <executable>java</executable>
+                    <arguments>
+                        <argument>-Dlogback.configurationFile=./conf/logback.groovy</argument>
+                        <argument>-XX:-HeapDumpOnOutOfMemoryError</argument>
+                        <argument>-Dhazelcast.config=conf/hazelcast-default.xml</argument>
+                        <argument>-Xmx2G</argument>
+                        <argument>-XX:+UseCompressedOops</argument>
+                        <argument>-XX:+UseG1GC</argument>
+                    </arguments>
+                    <mainClass>org.al.snap.sources.main.MainPackage</mainClass>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     <dependencies>
