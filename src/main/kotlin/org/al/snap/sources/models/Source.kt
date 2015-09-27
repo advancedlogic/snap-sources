@@ -81,7 +81,7 @@ public class Source(val uri:String): Serializable, Log, Utils {
             for (key in params.keySet()) {
                 this.params.put(key, params.getAsString(key))
             }
-            this.status = json.take("status", "")
+            this.status = json.take("status", Globals.SOURCE_READY)
             this.format = "json"
         } catch(e:Exception) {
             this.endpoint = uri

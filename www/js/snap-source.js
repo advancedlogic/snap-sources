@@ -309,7 +309,7 @@ function edit(sid) {
         $("#source-name").val(source.name);
         $("#source-author").val(source.author);
         $("#source-description").val(source.description);
-        $("#source-sources").val(source.params.urls.replace(",", "\n"));
+        $("#source-sources").val(source.params.urls.replace(/,/g, "\n"));
         $("#source-loop").attr("checked", source.params.loop);
         $scope.pauseModel = {
             id : pause2id(source.params.pause)

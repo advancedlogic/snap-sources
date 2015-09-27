@@ -117,9 +117,9 @@ public object Crawler: Log, Utils {
         return mimeType
     }
 
-    private class HttpTimerTask(val httpClient:CloseableHttpClient):TimerTask(), Log {
+    private class HttpTimerTask(val httpClient:CloseableHttpClient, val url:String):TimerTask(), Log {
         override fun run() {
-            warn("Session timeout")
+            warn("Session timeout for $url")
             httpClient.close()
         }
     }
@@ -138,7 +138,7 @@ public object Crawler: Log, Utils {
             httpClient.use {
                 try {
                     val timer = Timer()
-                    timer.schedule(HttpTimerTask(httpClient), 5000)
+                    timer.schedule(HttpTimerTask(httpClient, entity.finalUrl), 10000)
                     val response = httpClient.execute(httpGet, context)
                     response.use {
                         timer.cancel()
