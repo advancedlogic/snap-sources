@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring" trace="true">
+        <package>com.bdl.snap.kernel.camel.routes</package>
+        <jmxAgent id="agent" createConnector="true"/>
+        <restConfiguration bindingMode="off" component="jetty" host="0.0.0.0" port="8000"/>
+        <rest>
+            <get uri="/heartbeat">
+                <to uri="bean:snap-sources-service?method=heartbeat"/>
+            </get>
+        </rest>
+        <rest path="/snap-sources" consumes="application/json" produces="application/json">
+            <get uri="/status">
+                <to uri="bean:snap-sources-service?method=status" />
+            </get>
+            <get uri="/create/{uri}">
+                <to uri="direct:snap-sources-create" />
+            </get>
+            <post uri="/create">
+                <to uri="bean:snap-sources-service?method=create" />
+            </post>
+            <post uri="/create-and-start">
+                <to uri="bean:snap-sources-service?method=createAndStart" />
+            </post>
+            <get uri="/delete/{sid}">
+                <to uri="direct:snap-sources-delete" />
+            </get>
+            <get uri="/read/{sid}">
+                <to uri="direct:snap-sources-read" />
+            </get>
+            <get uri="/read-all">
+                <to uri="bean:snap-sources-service?method=readAll" />
+            </get>
+            <get uri="/start/{sid}">
+                <to uri="direct:snap-sources-start" />
+            </get>
+            <get uri="/stop/{sid}">
+                <to uri="direct:snap-sources-stop" />
+            </get>
+            <get uri="/pause/{sid}">
+                <to uri="direct:snap-sources-pause" />
+            </get>
+            <get uri="/resume/{sid}">
+                <to uri="direct:snap-sources-resume" />
+            </get>
+            <get uri="/disable/{sid}">
+                <to uri="direct:snap-sources-disable" />
+            </get>
+        </rest>
+        <route>
+            <from uri="direct:snap-sources-create" />
+            <process ref="snap-sources-uri" />
+            <to uri="bean:snap-sources-service?method=create" />
+        </route>
+        <route>
+            <from uri="direct:snap-sources-delete" />
+            <process ref="snap-sources-sid" />
+            <to uri="bean:snap-sources-service?method=delete" />
+        </route>
+        <route>
+            <from uri="direct:snap-sources-read" />
+            <process ref="snap-sources-sid" />
+            <to uri="bean:snap-sources-service?method=read" />
+        </route>
+        <route>
+            <from uri="direct:snap-sources-start" />
+            <process ref="snap-sources-sid" />
+            <to uri="bean:snap-sources-service?method=start" />
+        </route>
+        <route>
+            <from uri="direct:snap-sources-stop" />
+            <process ref="snap-sources-sid" />
+            <to uri="bean:snap-sources-service?method=stop" />
+        </route>
+        <route>
+            <from uri="direct:snap-sources-pause" />
+            <process ref="snap-sources-sid" />
+            <to uri="bean:snap-sources-service?method=suspend" />
+        </route>
+        <route>
+            <from uri="direct:snap-sources-resume" />
+            <process ref="snap-sources-sid" />
+            <to uri="bean:snap-sources-service?method=resume" />
+        </route>
+        <route>
+            <from uri="direct:snap-sources-disable" />
+            <process ref="snap-sources-sid" />
+            <to uri="bean:snap-sources-service?method=disable" />
+        </route>
+        <route>
+            <from uri="seda:slow"/>
+            <to uri="activemq:queue:slow"/>
+        </route>
+        <route>
+            <from uri="seda:html"/>
+            <to uri="activemq:queue:external"/>
+        </route>
+        <route>
+            <from uri="activemq:queue:slow"/>
+            <to uri="bean:snap-sources-service?method=crawl"/>
+        </route>
+        <route>
+            <from uri="jetty:http://0.0.0.0:8000/static?matchOnUriPrefix=true&amp;enableCORS=true" />
+            <to uri="static-content://www" />
+        </route>
+    </camelContext>
+
+    <bean id="jmsConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+        <property name="brokerURL" value="tcp://localhost:61616"/>
+    </bean>
+
+    <bean id="pooledConnectionFactory"
+          class="org.apache.activemq.pool.PooledConnectionFactory" init-method="start" destroy-method="stop">
+        <property name="maxConnections" value="16"/>
+        <property name="connectionFactory" ref="jmsConnectionFactory"/>
+    </bean>
+
+    <bean id="jmsConfig"
+          class="org.apache.camel.component.jms.JmsConfiguration">
+        <property name="connectionFactory" ref="pooledConnectionFactory"/>
+        <property name="concurrentConsumers" value="16"/>
+    </bean>
+
+    <bean id="activemq"
+          class="org.apache.activemq.camel.component.ActiveMQComponent">
+        <property name="configuration" ref="jmsConfig"/>
+
+        <!-- if we are using transacted then enable CACHE_CONSUMER (if not using XA) to run faster
+             see more details at: http://camel.apache.org/jms
+        <property name="transacted" value="true"/>
+        <property name="cacheLevelName" value="CACHE_CONSUMER" />
+        -->
+    </bean>
+
+    <bean class="org.crsh.spring.SpringBootstrap">
+        <property name="cmdMountPointConfig" value="classpath:/snap-crash/commands/"/>
+        <property name="config">
+            <props>
+                <!-- VFS configuration -->
+                <prop key="crash.vfs.refresh_period">1</prop>
+
+                <!-- SSH configuration -->
+                <prop key="crash.ssh.port">2000</prop>
+
+                <!-- Optional SSH timeouts -->
+                <prop key="crash.ssh.auth_timeout">300000</prop>
+                <prop key="crash.ssh.idle_timeout">300000</prop>
+
+                <!-- Telnet configuration -->
+                <prop key="crash.telnet.port">5000</prop>
+
+                <!-- Authentication configuration -->
+                <prop key="crash.auth">simple</prop>
+                <prop key="crash.auth.simple.username">admin</prop>
+                <prop key="crash.auth.simple.password">admin</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="snap-sources-service" class="org.al.snap.sources.camel.beans.Service"/>
+    <bean id="snap-sources-sid" class="org.al.snap.sources.camel.processors.SIDProcessor" />
+    <bean id="snap-sources-uri" class="org.al.snap.sources.camel.processors.URIProcessor" />
+</beans>

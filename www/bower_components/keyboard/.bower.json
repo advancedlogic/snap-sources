@@ -1,0 +1,32 @@
+{
+  "name": "keyboard",
+  "main": [
+    "dist/js/jquery.keyboard.min.js",
+    "dist/css/keyboard.min.css",
+    "dist/layouts/keyboard-layouts-combined.min.js",
+    "dist/layouts/keyboard-layouts-greywyvern.min.js",
+    "dist/layouts/keyboard-layouts-microsoft.min.js"
+  ],
+  "ignore": [
+    "js/*.js",
+    "css/*.css",
+    "layouts/*.js",
+    "docs/*"
+  ],
+  "dependencies": {
+    "jquery": ">=1.4.3",
+    "jquery-ui": ">=1.9.2"
+  },
+  "homepage": "https://github.com/Mottie/Keyboard",
+  "version": "1.25.5",
+  "_release": "1.25.5",
+  "_resolution": {
+    "type": "version",
+    "tag": "v1.25.5",
+    "commit": "4ad1698b6728ef89ae1a4d9ceb289076b8afddaf"
+  },
+  "_source": "git://github.com/Mottie/Keyboard.git",
+  "_target": "~1.25.5",
+  "_originalSource": "keyboard",
+  "_direct": true
+}
