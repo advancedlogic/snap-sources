@@ -278,6 +278,11 @@
             <artifactId>quartz</artifactId>
             <version>${quartz.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.mashape.unirest</groupId>
+            <artifactId>unirest-java</artifactId>
+            <version>${unirest.version}</version>
+        </dependency>
     </dependencies>
     <properties>
         <kotlin.version>0.13.1513</kotlin.version>
@@ -299,6 +304,7 @@
         <hazelcast.version>3.5.2</hazelcast.version>
         <mapdb.version>2.0-beta7</mapdb.version>
         <quartz.version>2.2.1</quartz.version>
+        <unirest.version>1.4.6</unirest.version>
     </properties>
     <repositories>
         <repository>

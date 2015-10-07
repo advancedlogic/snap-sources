@@ -1,5 +1,6 @@
 package org.al.snap.sources.main
 
+import com.mashape.unirest.http.Unirest
 import org.al.snap.sources.camel.Camel
 import org.al.snap.sources.engine.Crawler
 import org.al.snap.sources.engine.Dispatcher
@@ -32,6 +33,7 @@ public object App {
     fun close() {
         Camel.stop()
         Elastic.close()
+        Unirest.shutdown()
     }
 }
 

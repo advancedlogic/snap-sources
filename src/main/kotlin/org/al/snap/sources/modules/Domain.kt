@@ -33,7 +33,7 @@ public class Domain:Module() {
                 webEntity.module = "domain"
 
                 info("Send ${url} for module ${webEntity.module}}")
-                Camel.send(endpoint, webEntity)
+                Camel.send(slowEndpoint, webEntity)
             }
         }
     }

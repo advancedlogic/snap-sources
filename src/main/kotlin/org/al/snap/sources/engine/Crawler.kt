@@ -95,8 +95,11 @@ public object Crawler: Log, Utils {
         var finalUrl = url
         httpClient.use {
             try {
+                val timer = Timer()
+                timer.schedule(HttpTimerTask(httpClient, entity.finalUrl), 5000)
                 val response = httpClient.execute(httpHead, context)
                 response.use {
+                    timer.cancel()
                     val locations:Iterable<URI>? = context.getRedirectLocations()
                     if (locations != null) {
                         finalUrl = locations.last().toString()

@@ -12,7 +12,8 @@ import org.quartz.JobExecutionContext
  * Created by skywalker on 9/22/15.
  */
 public abstract class Module: Job, Log, Utils {
-    val endpoint = Conf.getOrDefault("modules.endpoint", "seda:slow")
+    val slowEndpoint = Conf.getOrDefault("modules.endpoint.slow", "seda:slow")
+    val fastEndpoint = Conf.getOrDefault("modules.endpoint.fast", "seda:fast")
 
     override fun execute(context: JobExecutionContext?) {
         val source = context?.jobDetail?.jobDataMap?.get("source") as Source

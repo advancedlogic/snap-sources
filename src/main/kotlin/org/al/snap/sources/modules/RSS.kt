@@ -65,7 +65,7 @@ public class RSS:Module() {
 
                 info("Send ${webEntity.title} for module ${webEntity.module}}")
 
-                Camel.send(endpoint, webEntity)
+                Camel.send(slowEndpoint, webEntity)
             }
         }
     }

@@ -31,6 +31,14 @@ app.controller('MainController', function($scope) {
         {
             id : 3,
             label : "RSS"
+        },
+        {
+            id : 4,
+            label : "Rest"
+        },
+        {
+            id : 5,
+            label : "Twitter"
         }
     ];
     $scope.moduleModel = {};
@@ -55,6 +63,12 @@ app.controller('MainController', function($scope) {
                     break;
                 case 3:
                     module = "rss";
+                    break;
+                case 4:
+                    module = "rest";
+                    break;
+                case 5:
+                    module = "twitter";
                     break;
                 default:
                     break;

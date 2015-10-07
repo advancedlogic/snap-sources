@@ -24,7 +24,7 @@ public class Link:Module() {
             info("Send ${webEntity.url} for module ${webEntity.module}}")
 
 
-            Camel.send(endpoint, webEntity)
+            Camel.send(slowEndpoint, webEntity)
         }
     }
 }

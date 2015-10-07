@@ -99,6 +99,10 @@
             <to uri="activemq:queue:external"/>
         </route>
         <route>
+            <from uri="seda:fast"/>
+            <to uri="activemq:queue:external"/>
+        </route>
+        <route>
             <from uri="activemq:queue:slow"/>
             <to uri="bean:snap-sources-service?method=crawl"/>
         </route>
@@ -109,7 +113,7 @@
     </camelContext>
 
     <bean id="jmsConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
-        <property name="brokerURL" value="tcp://localhost:61616"/>
+        <property name="brokerURL" value="tcp://192.168.111.202:61616"/>
     </bean>
 
     <bean id="pooledConnectionFactory"

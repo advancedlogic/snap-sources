@@ -89,7 +89,7 @@ public interface Utils {
         }
     }
 
-    @suppress("UNCHECKED_CAST")
+    @Suppress("UNCHECKED_CAST")
     fun sortByValue<T,V>(m: HashMap<T, V>): ArrayList<T> {
         class mapComparator: Comparator<T> {
 
