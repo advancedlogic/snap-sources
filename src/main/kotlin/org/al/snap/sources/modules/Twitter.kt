@@ -57,7 +57,7 @@ public class Twitter: Module() {
                             webEntity.url = _url
                             webEntity.module = "link"
 
-                            info("Send ${webEntity.url} for module ${webEntity.module}}")
+                            info("Send ${webEntity.url} for module ${webEntity.module}")
                             Camel.send(slowEndpoint, webEntity)
                         }
                     }

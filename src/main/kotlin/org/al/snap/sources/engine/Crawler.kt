@@ -96,7 +96,7 @@ public object Crawler: Log, Utils {
         httpClient.use {
             try {
                 val timer = Timer()
-                timer.schedule(HttpTimerTask(httpClient, entity.finalUrl), 5000)
+                timer.schedule(HttpTimerTask(httpClient, entity.url), 5000)
                 val response = httpClient.execute(httpHead, context)
                 response.use {
                     timer.cancel()
@@ -106,7 +106,7 @@ public object Crawler: Log, Utils {
                     }
                 }
             } catch (e: IOException) {
-                //warn(e.getMessage()!!)
+                warn(e.getMessage()?:"Error resolving ${entity.url}")
             }
         }
 
@@ -192,11 +192,13 @@ public object Crawler: Log, Utils {
                         }
                     }
                 } catch(e: IOException) {
+                    warn(e.getMessage()?:"Error fetching ${entity.url}")
                 }
             }
 
         } catch(e:Exception) {
             entity.valid = false
+            warn(e.getMessage()?:"Error fetching ${entity.url} - url is invalid")
         }
     }
 
@@ -214,7 +216,9 @@ public object Crawler: Log, Utils {
             }
 
             entity.domain = topDomain
-        } catch(e:Exception) {}
+        } catch(e:Exception) {
+            warn(e.getMessage()?:"Error guessing domain for ${entity.url}")
+        }
     }
 
     fun tryToGetLinks(entity: WebEntity) {
@@ -278,7 +282,8 @@ public object Crawler: Log, Utils {
                     }
                     debug("[Goose] Content: ${entity.content}")
                 }
-            } catch(t:Throwable) {
+            } catch(e:Exception) {
+                warn(e.getMessage()?:"Error goosing ${entity.url}")
             }
         }
     }
@@ -288,20 +293,24 @@ public object Crawler: Log, Utils {
             try {
                 entity.content = ArticleExtractor.getInstance()?.getText(entity.html)!!
                 debug("[Boilerpipe] Content: ${entity.content}")
-            } catch (t:Throwable) {
-
+            } catch (e:Exception) {
+                warn(e.getMessage()?:"Error boilerpiping ${entity.url}")
             }
         }
     }
 
     fun tryToGuessTopImage(entity: WebEntity) {
         if (entity.document != null) {
-            var topImage = openGraphResolver(entity.document!!)
-            if (topImage == "") {
-                topImage = webPageResolver(entity.document!!)
+            try {
+                var topImage = openGraphResolver(entity.document!!)
+                if (topImage == "") {
+                    topImage = webPageResolver(entity.document!!)
+                }
+                entity.image = topImage
+                debug("[] Image: ${entity.image}")
+            } catch(e:Exception) {
+                warn(e.getMessage()?:"Error guessing top image for ${entity.url}")
             }
-            entity.image = topImage
-            debug("[] Image: ${entity.image}")
         }
     }
 

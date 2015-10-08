@@ -46,13 +46,18 @@ public object Elastic: Log {
     }
 
     fun check(field:String, value:String):Boolean {
-        val response = client.prepareSearch(esIndex)
-                ?.setTypes(esType)
-                ?.setSearchType(SearchType.DFS_QUERY_AND_FETCH)
-                ?.setQuery(QueryBuilders.termQuery(field, value))
-                ?.execute()
-                ?.actionGet()
-        val len =response?.getHits()?.getHits()?.size()
-        return len != 0
+        try {
+            val response = client.prepareSearch(esIndex)
+                    ?.setTypes(esType)
+                    ?.setSearchType(SearchType.DFS_QUERY_AND_FETCH)
+                    ?.setQuery(QueryBuilders.termQuery(field, value))
+                    ?.execute()
+                    ?.actionGet()
+            val len = response?.getHits()?.getHits()?.size()
+            return len != 0
+        } catch(e:Exception) {
+            warn(e.getMessage()?:"Error checking $field:$value on Elastic Search")
+            return false
+        }
     }
 }

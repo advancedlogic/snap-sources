@@ -36,6 +36,7 @@ public object Filter:Log, Utils {
                             val tmpExtension = extension.substring(0,l)
                             if (tmpExtension in extensions) {
                                 entity.valid = false
+                                warn("$url is not valid")
                             }
                         }
                     }
